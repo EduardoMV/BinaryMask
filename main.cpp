@@ -6,6 +6,16 @@
 using namespace cv;
 using namespace std;
 
+/**
+ * @brief Creates a binary mask from a grayscale input image.
+ *
+ * This function takes an input grayscale image 'f' and creates a binary mask based on a threshold.
+ * Pixels with values greater than 125 are set to 255 (white), and others are set to 0 (black).
+ *
+ * @param f Input grayscale image.
+ * @return Binary mask image.
+ */
+
 Mat Binary(Mat f) {
 
 
@@ -25,6 +35,18 @@ Mat Binary(Mat f) {
     return msk;
 }
 
+/**
+ * @brief Applies a binary mask to two grayscale images and generates an output image.
+ *
+ * This function creates a binary mask 'm' based on a threshold and applies it to two images 'f' and 'h'.
+ * Pixels in 'g' are taken from 'h' where 'm' is >= 200 and from 'f' otherwise.
+ * Additionally, this function displays and saves intermediate images for debugging purposes.
+ *
+ * @param g Output image where the binary mask is applied.
+ * @param m Binary mask image.
+ * @param f First grayscale input image.
+ * @param h Second grayscale input image.
+ */
 void BinaryMask(Mat g, Mat m, Mat f, Mat h){
 
     for(int row = 0; row < g.rows; row++){
@@ -39,18 +61,16 @@ void BinaryMask(Mat g, Mat m, Mat f, Mat h){
     }
 
     namedWindow("PhotoFrame", WINDOW_NORMAL);
+    imshow("PhotoFrame", f);
+    waitKey(0);
+
+    namedWindow("PhotoFrame", WINDOW_NORMAL);
     imshow("PhotoFrame", m);
     imwrite("Mask2.jpg", m);
     waitKey(0);
 
     namedWindow("PhotoFrame", WINDOW_NORMAL);
-    imshow("PhotoFrame", f);
-    imwrite("Ori1.jpg", f);
-    waitKey(0);
-
-    namedWindow("PhotoFrame", WINDOW_NORMAL);
     imshow("PhotoFrame", h);
-    imwrite("Ori2.jpg", h);
     waitKey(0);
 
     namedWindow("PhotoFrame", WINDOW_NORMAL);
@@ -60,11 +80,20 @@ void BinaryMask(Mat g, Mat m, Mat f, Mat h){
 
 }
 
+Mat LoadImage(const string& filename, int flags){
+    Mat image = imread(filename, flags);
+    if(image.empty()) {
+        cerr << "Error: Unable to load image from file: " << filename << endl;
+        exit(EXIT_FAILURE);
+    }
+    return image;
+}
+
 
 int main() {
-    Mat f = imread("../Dice.png", IMREAD_GRAYSCALE);
+    Mat f = LoadImage("../Dice.png", IMREAD_GRAYSCALE);
     Mat tH = Binary(f);
-    Mat h = imread("../Flower.png", IMREAD_GRAYSCALE);
+    Mat h = LoadImage("../Flower.png", IMREAD_GRAYSCALE);
 
     int srows = min(f.rows, h.rows);
     int scols = min(f.cols, h.cols);
